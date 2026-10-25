@@ -1,0 +1,25 @@
+# dsh-memory-curve 的装配补丁（由 dsh.profile.bundles 引入）
+#
+# ⚠️ 同一个插件只能 insert 一次：重复实例 = 冲突崩溃循环。
+# ⚠️ 这里的 config 是默认值；要覆盖就在 profile 的 cordis.patch.yml 顶层写同 id 的行。
+- insert:
+    - id: dsh-memory-curve
+      name: dsh-memory-curve
+      config:
+        enabled: true
+        # L1 原文窗口：保留多少轮（1 轮 = 用户一句 + 我一句）
+        l1MaxTurns: 10
+        # L2 短期摘要：多少小时过期、最多注入几条
+        l2ExpireHours: 24
+        l2MaxItems: 10
+        # L3 长期事实：多少天没被提到就过期、最多几条
+        l3ExpireDays: 30
+        l3MaxItems: 20
+        # 回溯
+        retrieveLimit: 3
+        archiveDays: 7
+        # 判分（关掉就全走本地启发式，不花模型调用）
+        enableJudge: true
+        judgeModel: ''
+        # 工具：memory_curve_list / search / add / forget / prune
+        toolsEnabled: true

@@ -1,0 +1,51 @@
+{
+  "name": "dsh-memory-curve",
+  "version": "1.0.3",
+  "description": "四层记忆（原文窗口 / 短期摘要 / 长期事实 / 全量存档 + 关键词回溯），移植自 astrbot_plugin_memory_curve，适配 DeepSeek Harness。",
+  "type": "module",
+  "main": "lib/index.js",
+  "files": [
+    "lib",
+    "scripts/patch-profile.mjs",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.0.2",
+    "@deepseek-ai/dsh-tools": "*"
+  },
+  "peerDependenciesMeta": {
+    "@deepseek-ai/dsh-tools": {
+      "optional": true
+    }
+  },
+  "scripts": {
+    "test": "node test/smoke.mjs && node test/host-sim.mjs",
+    "test:smoke": "node test/smoke.mjs",
+    "test:host": "node test/host-sim.mjs",
+    "patch": "node scripts/patch-profile.mjs"
+  },
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "memory",
+    "long-term-memory",
+    "recall"
+  ],
+  "author": "宅家大肥鱼",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zhai-jia-da-fei-yu/dsh-memory-curve.git"
+  }
+}
