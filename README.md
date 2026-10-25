@@ -67,13 +67,35 @@ New-Item -ItemType Junction `
     dataDir: ''                # 默认 ~/.dsh/memory-curve
 ```
 
+## 设置页
+
+浏览器那半端在 `client.js`（自注册脚本，`window.__ModuleLoader__.load`），往 `settings.section` 这个 slot 里注册一栏，所以重启之后 **设置 → 记忆曲线** 会多出一页：
+
+- 左边是会话列表（长期 / 短期 / 原文条数、最后更新时间），右边是这个会话攒下的条目：长期在前、短期在后，带序号、分数、类型、时间。
+- 能手动塞一条（直接进 L3，标 `manual`，5/4/3 分可选）、按序号删、一键清掉一次性任务；搜索框在「条目」页是本地筛，切到「旧对话」就翻 archive 原文。
+- 数据接口在宿主侧 `lib/panel.js`，前缀 `/api/memory-curve`（`/state` `/memory` `/search` `/add` `/forget` `/prune` `/ping`），**只认回环地址**，真外站一律 403；`file://` 外壳或沙箱 iframe 那种 `Origin: null` 的请求会放行——不然页面自己的 fetch 会被自己人挡掉，看起来就是「接口不通」。
+- 写入走的是同一套 `MemoryCurve` 方法，所以备份、去重、过期照旧生效——面板只是给你一个能看见的地方，不是旁路。
+
+### 面板说「接口不通」怎么查
+
+宿主侧每个请求都往 `<dataDir>/panel.log` 记一行（方法、路径、判决码、耗时、Host / Origin / sec-fetch-site），另有一份页面半端的启动心跳：
+
+- `~/.dsh/memory-curve/.boot-web.json` — `stage` 是 `web-mounted` 说明路由挂上了；`web-failed` 会带 `error`。
+- `~/.dsh/memory-curve/panel.log` — 有行说明请求确实到了宿主；一行都没有就是请求没发出去（多半是页面侧地址不对）。
+- `curl http://127.0.0.1:<GUI 端口>/api/memory-curve/ping` — 出 JSON 就说明宿主这半边是好的。
+
+页面侧会依次试 `/api/memory-curve` → `http://127.0.0.1:<端口>/api/memory-curve` → `localhost` 三条地址，全不通才报错，并把试过的东西写在红框里。
+
+配置项（`dataDir`、阈值、判分模型）在面板里只读显示，要改还是去 profile 的 `cordis.patch.yml`。
+
 ## 自测
 
 ```bash
-npm test                        # 逻辑 + 宿主仿真
+npm test                        # 逻辑 + 宿主仿真 + 设置页接口
 node test/smoke.mjs             # 词表 / 配置钳位 / 落盘 / 四层 / 判分降级
-node test/host-sim.mjs          # 假 ctx 把 apply 真跑一遍，喂一轮问答看注入和工具
-node scripts/verify-wiring.mjs  # 查装配：patch 只 insert 一次、link 能解析、bundle patch 在位
+node test/host-sim.mjs          # 假 ctx 把 apply 真跑一遍，喂一轮问答看注入 / 工具 / 路由
+node test/panel.mjs             # 假 req/res 打 /api/memory-curve/*，含跨站与坏 JSON
+node scripts/verify-wiring.mjs  # 查装配：patch 只 insert 一次、link 能解析、client.js 与清单在位
 ```
 
 ## 已知取舍

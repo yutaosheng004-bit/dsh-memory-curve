@@ -17,6 +17,7 @@ const disposers = [];
 const sections = [];
 const tools = new Map();
 const effects = [];
+const routes = [];
 
 const scoped = {
   effect(fn) {
@@ -52,6 +53,17 @@ const scoped = {
     register(tool) {
       tools.set(tool.name, tool);
       const dispose = () => tools.delete(tool.name);
+      disposers.push(dispose);
+      return dispose;
+    },
+  },
+  webServer: {
+    register(route) {
+      routes.push(route);
+      const dispose = () => {
+        const index = routes.indexOf(route);
+        if (index >= 0) routes.splice(index, 1);
+      };
       disposers.push(dispose);
       return dispose;
     },
@@ -147,6 +159,19 @@ const handler = handlers.get('session/disposed');
 assert.ok(handler, 'session/disposed 没挂上');
 handler(session);
 console.log('  ✓ session/disposed 已处理');
+
+console.log('设置页接口');
+assert.equal(routes.length, 1, `路由数 ${routes.length}`);
+assert.equal(routes[0].kind, 'prefix');
+assert.equal(routes[0].path, '/api/memory-curve');
+assert.equal(typeof routes[0].handler, 'function');
+console.log('  ✓ /api/memory-curve 已挂到 webServer');
+
+const webMark = JSON.parse(fs.readFileSync(path.join(root, '.boot-web.json'), 'utf8'));
+assert.equal(webMark.stage, 'web-mounted');
+assert.equal(webMark.path, '/api/memory-curve');
+assert.equal(webMark.routes, 1);
+console.log('  ✓ .boot-web.json 记下 web-mounted');
 
 for (const dispose of disposers) dispose?.();
 for (const dispose of effects) if (typeof dispose === 'function') dispose();
