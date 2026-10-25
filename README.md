@@ -27,6 +27,8 @@
 
 ## 装
 
+在 npm 上：`npm i dsh-memory-curve`（版本跟这里同步，MIT）。装完把包名加进 profile 的 `dsh.profile.bundles`，或者干脆用下面的 link 方式直接挂本地目录——改代码不用重装。
+
 ```bash
 node scripts/patch-profile.mjs            # 幂等，可先加 --dry 看
 node scripts/patch-profile.mjs --profile <profile 目录>
