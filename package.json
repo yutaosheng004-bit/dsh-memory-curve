@@ -42,10 +42,11 @@
     }
   },
   "scripts": {
-    "test": "node test/smoke.mjs && node test/host-sim.mjs && node test/panel.mjs",
+    "test": "node test/smoke.mjs && node test/host-sim.mjs && node test/panel.mjs && node test/panel-live.mjs",
     "test:smoke": "node test/smoke.mjs",
     "test:host": "node test/host-sim.mjs",
     "test:panel": "node test/panel.mjs",
+    "test:panel-live": "node test/panel-live.mjs",
     "patch": "node scripts/patch-profile.mjs"
   },
   "keywords": [

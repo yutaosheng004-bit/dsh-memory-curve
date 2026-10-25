@@ -91,10 +91,11 @@ New-Item -ItemType Junction `
 ## 自测
 
 ```bash
-npm test                        # 逻辑 + 宿主仿真 + 设置页接口
+npm test                        # 逻辑 + 宿主仿真 + 设置页接口 + 真 HTTP 端到端
 node test/smoke.mjs             # 词表 / 配置钳位 / 落盘 / 四层 / 判分降级
 node test/host-sim.mjs          # 假 ctx 把 apply 真跑一遍，喂一轮问答看注入 / 工具 / 路由
 node test/panel.mjs             # 假 req/res 打 /api/memory-curve/*，含跨站与坏 JSON
+node test/panel-live.mjs        # 起真 http 服务器，用真请求打 Origin: null / 预检 / 外站 403 / 日志
 node scripts/verify-wiring.mjs  # 查装配：patch 只 insert 一次、link 能解析、client.js 与清单在位
 ```
 
